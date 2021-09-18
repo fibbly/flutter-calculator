@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_calculator/buttons.dart';
 import 'package:math_expressions/math_expressions.dart';
 
@@ -14,9 +15,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        appBarTheme: const AppBarTheme(
+          color: Colors.transparent,
+        ),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -60,7 +64,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple[100],
+      appBar: AppBar(
+        toolbarHeight: 12,
+      ),
+      backgroundColor: Colors.black,
       body: Column(
         children: [
           Expanded(
@@ -75,7 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     userQuestion,
-                    style: const TextStyle(fontSize: 20),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      color: Colors.white70,
+                    ),
                   ),
                 ),
                 Container(
@@ -83,7 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   alignment: Alignment.centerRight,
                   child: Text(
                     userAnswer,
-                    style: const TextStyle(fontSize: 20),
+                    style: const TextStyle(
+                      fontSize: 64,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
@@ -101,23 +114,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   return MyButton(
                     buttonTapped: () {
                       setState(() {
-                        userQuestion = "";
+                        if (userQuestion == "" && userAnswer != "") {
+                          userAnswer = "";
+                        } else {
+                          userQuestion = "";
+                        }
                       });
                     },
                     buttonText: buttons[index],
-                    color: Colors.green,
+                    color: Colors.green[700],
                     textColor: Colors.white,
                   );
                 } else if (index == 1) {
                   return MyButton(
                     buttonTapped: () {
                       setState(() {
-                        userQuestion =
-                            userQuestion.substring(0, userQuestion.length - 1);
+                        if (userQuestion != "") {
+                          userQuestion = userQuestion.substring(
+                              0, userQuestion.length - 1);
+                        }
                       });
                     },
                     buttonText: buttons[index],
-                    color: Colors.red,
+                    color: Colors.red[900],
                     textColor: Colors.white,
                   );
                 } else if (index == buttons.length - 1) {
@@ -128,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     },
                     buttonText: buttons[index],
-                    color: Colors.deepPurple,
+                    color: Colors.grey[900],
                     textColor: Colors.white,
                   );
                 } else {
@@ -140,11 +159,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     buttonText: buttons[index],
                     color: isOperator(buttons[index])
-                        ? Colors.deepPurple
-                        : Colors.deepPurple[50],
+                        ? Colors.grey[900]
+                        : Colors.white70,
                     textColor: isOperator(buttons[index])
                         ? Colors.white
-                        : Colors.deepPurple,
+                        : Colors.grey[900],
                   );
                 }
               },
@@ -164,11 +183,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void equalPressed() {
     String finalQuestion = userQuestion;
-    finalQuestion = finalQuestion.replaceAll("x", "*");
-    Parser p = Parser();
-    Expression exp = p.parse(finalQuestion);
-    ContextModel cm = ContextModel();
-    double eval = exp.evaluate(EvaluationType.REAL, cm);
-    userAnswer = eval.toString();
+    finalQuestion = finalQuestion.replaceAll("x", "*").replaceAll("%", "/100");
+    print(finalQuestion);
+    try {
+      Parser p = Parser();
+      Expression exp = p.parse(finalQuestion);
+      ContextModel cm = ContextModel();
+      double eval = exp.evaluate(EvaluationType.REAL, cm);
+      userAnswer = eval.toString();
+    } catch (error) {
+      userAnswer = "ERR";
+    }
   }
 }
