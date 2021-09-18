@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_calculator/buttons.dart';
 import 'package:math_expressions/math_expressions.dart';
 
@@ -184,7 +183,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void equalPressed() {
     String finalQuestion = userQuestion;
     finalQuestion = finalQuestion.replaceAll("x", "*").replaceAll("%", "/100");
-    print(finalQuestion);
     try {
       Parser p = Parser();
       Expression exp = p.parse(finalQuestion);
